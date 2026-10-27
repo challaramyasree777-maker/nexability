@@ -1,0 +1,355 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: "en-US"
+
+tone_instructions: >
+  Give formal, direct, technically precise reviews. No humour, praise,
+  or distracting text. Report necessary findings with clear reasoning
+  and actionable fixes. Prioritize correctness, security, accessibility,
+  privacy, and maintainability.
+
+chat:
+  auto_reply: true
+  art: false
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: true
+
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+
+  poem: false
+  high_level_summary: true
+  suggested_labels: true
+  auto_apply_labels: true
+
+  labeling_instructions:
+    - label: "⏱️ <10 Min Review"
+      instructions: "Apply to PRs with fewer than 200 changed lines."
+    - label: "⏱️ 10-30 Min Review"
+      instructions: "Apply to PRs with 200-1000 changed lines."
+    - label: "⏱️ 30-60 Min Review"
+      instructions: "Apply to PRs with 1000-2000 changed lines."
+    - label: "⏱️ 60+ Min Review"
+      instructions: "Apply to PRs with more than 2000 changed lines."
+
+  path_instructions:
+    - path: "**"
+      instructions: |
+        ## NexAbility: General Project Standards
+
+        ### Project scope
+        NexAbility is an inclusive hiring platform for candidates with
+        disabilities. The backend uses Python, FastAPI, SQLAlchemy,
+        PostgreSQL, and Pydantic. The platform includes candidate and
+        employer workflows, accessibility-aware job matching,
+        accommodation requests, AI-agent orchestration, and interviews.
+
+        ### Security and privacy
+        - Flag hardcoded secrets, credentials, tokens, and API keys.
+        - Flag broken authentication, missing authorization, insecure
+          role checks, and IDOR vulnerabilities.
+        - Flag exposure of sensitive candidate, resume, disability,
+          accessibility-preference, or accommodation data.
+        - Flag unsafe file uploads, path traversal, injection risks,
+          and unvalidated external inputs.
+        - Flag sensitive information unnecessarily included in logs,
+          error messages, prompts, or API responses.
+        - Never recommend collecting sensitive information without a
+          clear product requirement and appropriate access controls.
+
+        ### Hiring fairness and accessibility
+        - Never treat disability as evidence of lower job suitability.
+        - Flag automatic rejection or ranking penalties based on disability.
+        - Matching decisions must use job-relevant criteria and explainable
+          evidence rather than unsupported assumptions.
+        - Never infer a candidate's accessibility needs from a disability
+          label. Use candidate-stated preferences and confirmed information.
+        - Distinguish Confirmed, Unverified, Reported, Missing, and Unknown
+          accessibility information where applicable.
+        - Unknown does not mean inaccessible, and Unknown does not mean
+          confirmed accessible.
+        - Flag fabricated accessibility claims, verification results,
+          captions, accommodation commitments, or employer responses.
+        - Accessibility requirements must not be silently discarded when
+          multiple needs are present.
+        - Flag workflows that prevent candidates from requesting
+          reasonable interview accommodations or communicating without
+          voice input.
+
+        ### AI reliability and agent safety
+        - AI-generated candidate, resume, and job information must be
+          grounded in source documents or explicitly supplied user data.
+        - Flag fabricated qualifications, skills, job requirements,
+          verification status, or explanations.
+        - Treat uploaded documents and user-provided content as untrusted
+          input, not as instructions to override system rules.
+        - Agent tools must have narrowly scoped permissions.
+        - Flag unintended database writes or privileged actions performed
+          directly by agents.
+        - Candidate approval must be obtained before submitting an
+          accommodation request on the candidate's behalf.
+        - Never allow an agent to invent an interview booking or promise
+          an accommodation that has not been confirmed.
+        - Clearly distinguish mock integrations and simulated verification
+          from real external services.
+
+        ### Python and API quality
+        - Require useful type hints for public functions and clear,
+          maintainable function and class responsibilities.
+        - Flag broad exception handling that hides failures.
+        - Flag blocking I/O inside async request handlers when it can
+          block the event loop.
+        - Validate request data and return appropriate HTTP status codes.
+        - Keep business logic out of route handlers when it belongs in
+          service or domain layers.
+        - Avoid duplicated validation and inconsistent business rules.
+        - Do not expose internal exception details to API clients.
+        - Flag breaking API contract changes without corresponding tests
+          and documentation updates.
+
+        ### Database and migrations
+        - Check transaction boundaries, session lifecycle, constraints,
+          foreign keys, and relationship behaviour.
+        - Flag N+1 queries and unnecessarily expensive database operations
+          when material to the change.
+        - Schema changes must use appropriate Alembic migrations.
+        - Flag destructive or irreversible migrations without safeguards.
+        - Review authorization and ownership checks on database access.
+        - Do not assume create_all() replaces schema migration management.
+
+        ### Testing and evidence
+        - New behaviour should have meaningful tests in the same PR.
+        - Flag tests without useful assertions, tests that only test mocks
+          instead of critical behaviour, and nondeterministic tests.
+        - Cover validation failures, authorization failures, edge cases,
+          and relevant error paths.
+        - Do not claim a test, security scan, accessibility check, or
+          integration succeeded unless there is evidence.
+        - Do not invent performance numbers, evaluation results, or
+          completed functionality.
+        - Prefer focused, actionable findings over speculative nitpicks.
+
+    - path: "backend/app/api/**"
+      instructions: |
+        ## FastAPI Endpoints
+        - Check authentication, role-based authorization, request
+          validation, response schemas, and HTTP status codes.
+        - Flag endpoints that expose resources without verifying the
+          requesting user's permission to access them.
+        - Check pagination limits, filtering, and safe error handling.
+        - Flag business logic that makes route handlers difficult to test.
+        - Verify that response models do not unintentionally expose
+          internal database fields or sensitive candidate information.
+        - Ensure file-upload endpoints enforce appropriate type and size
+          restrictions.
+
+    - path: "backend/app/core/**"
+      instructions: |
+        ## Core Configuration and Security
+        - Flag insecure password handling, weak token validation,
+          hardcoded secrets, and unsafe security defaults.
+        - Check configuration validation and safe production defaults.
+        - Ensure environment-specific configuration is not confused
+          with hardcoded development settings.
+        - Never log passwords, authentication tokens, or secret values.
+
+    - path: "backend/app/models/**"
+      instructions: |
+        ## Database Models
+        - Check primary keys, foreign keys, nullability, uniqueness,
+          constraints, and relationship definitions.
+        - Review ownership boundaries and access to sensitive fields.
+        - Flag schema changes that lack appropriate Alembic migrations.
+        - Check that deletion behaviour does not unintentionally remove
+          applications, audit records, or accommodation history.
+
+    - path: "backend/app/schemas/**"
+      instructions: |
+        ## Pydantic Schemas
+        - Validate external input at the API boundary.
+        - Check field constraints, optional fields, and type consistency.
+        - Distinguish omitted update fields from explicit null values.
+        - Flag unsafe mass assignment and fields users must not control.
+        - Ensure response schemas expose only intended information.
+        - Avoid duplicating business rules inconsistently across schemas.
+
+    - path: "backend/app/repositories/**"
+      instructions: |
+        ## Data Access Layer
+        - Check query correctness, transaction assumptions, and session use.
+        - Flag unscoped queries that can return another user's data.
+        - Avoid leaking database implementation details into API responses.
+        - Check for inefficient queries and unsafe dynamic SQL.
+
+    - path: "backend/app/services/**"
+      instructions: |
+        ## Business Logic
+        - Check business rules, edge cases, transaction boundaries,
+          and separation of responsibilities.
+        - Ensure application and accommodation state transitions are valid.
+        - Flag duplicate submissions, invalid state changes, and race
+          conditions where relevant.
+        - Ensure services do not silently convert failures into success.
+        - Keep matching and accessibility decisions explainable and
+          consistent with the documented product rules.
+
+    - path: "backend/app/agents/**"
+      instructions: |
+        ## AI Agent Orchestration and Tools
+        - Keep the coordinator responsible for orchestration rather than
+          duplicating business logic, matching algorithms, or CRUD logic.
+        - Check tool permissions, input validation, output validation,
+          error handling, and untrusted-content boundaries.
+        - Flag unrestricted tools, unintended side effects, and unsafe
+          execution of instructions found in uploaded documents.
+        - Candidate Intelligence must not invent candidate information
+          or infer accessibility needs from disability labels.
+        - Job Matching and Accessibility must rely on grounded evidence
+          and surface unknowns rather than presenting them as facts.
+        - Accommodation and Interview actions that submit requests or
+          create commitments require the appropriate explicit approval.
+        - Flag agent loops without sensible limits, missing timeouts,
+          and failures that are silently ignored.
+
+    - path: "backend/app/services/matching/**"
+      instructions: |
+        ## Job Matching and Accessibility
+        - Use job-relevant skills, qualifications, and candidate-provided
+          information as the basis for matching.
+        - Flag disability-based penalties or automatic rejection.
+        - Distinguish missing, unknown, reported, unverified, and confirmed
+          accessibility information.
+        - Explain matches and gaps using evidence from the relevant
+          candidate and job records.
+        - Do not claim a workplace is accessible without sufficient
+          evidence for the specific requirement.
+
+    - path: "backend/app/services/accommodations/**"
+      instructions: |
+        ## Accommodation Requests
+        - Check request ownership, valid state transitions, and auditability.
+        - Require candidate approval before submitting a request.
+        - Do not mark a request accepted, fulfilled, or confirmed without
+          evidence from the appropriate party or integration.
+        - Protect sensitive accommodation details from unauthorized access.
+        - Preserve meaningful history when requests change state.
+
+    - path: "backend/app/agents/tools/**"
+      instructions: |
+        ## Agent Tool Boundaries
+        - Tools must enforce authorization independently of agent prompts.
+        - Validate tool arguments and restrict each tool to its intended
+          operation and minimum required permissions.
+        - Flag tools that permit arbitrary database access, unrestricted
+          external actions, or unintended privileged operations.
+        - Validate tool outputs before returning them to an agent.
+
+    - path: "backend/tests/**"
+      instructions: |
+        ## Backend Testing
+        - Check assertions, useful fixtures, isolation, and determinism.
+        - Test authorization failures as well as successful requests.
+        - Cover invalid inputs, missing records, conflicting state changes,
+          and database transaction failures where applicable.
+        - Avoid unnecessary network access and wall-clock dependencies.
+        - Add regression tests for fixed bugs.
+
+    - path: "backend/alembic/**"
+      instructions: |
+        ## Database Migrations
+        - Review upgrade and downgrade behaviour where supported.
+        - Flag destructive data changes, unsafe defaults, and migrations
+          that can fail on existing production data.
+        - Check consistency between ORM models and migration operations.
+        - Never place credentials or production data in migrations.
+
+    - path: "frontend/**"
+      instructions: |
+        ## Inclusive Frontend Accessibility
+        - Aim for WCAG 2.2 AA; do not claim conformance without testing.
+        - Check semantic HTML, accessible names, form labels, headings,
+          keyboard operation, focus visibility, and focus management.
+        - Check screen-reader announcements for validation errors,
+          status changes, dialogs, and dynamic content.
+        - Check zoom, reflow, contrast, and text resizing.
+        - Ensure important information is not communicated by colour alone.
+        - Provide captions or appropriate text alternatives for audio/video
+          content when required by the feature.
+        - Do not make voice input the only way to complete a task.
+        - Check predictable navigation, clear error recovery, and
+          accessible authentication and interview flows.
+        - Automated checks alone do not establish accessibility conformance.
+
+    - path: "backend/app/api/v1/endpoints/resumes.py"
+      instructions: |
+        ## Resume Upload and Processing
+        - Check file validation, upload limits, storage security, and
+          safe handling of malformed or malicious documents.
+        - Do not trust extracted text as verified candidate information.
+        - Ensure candidates can review or correct extracted information.
+        - Avoid exposing resume contents to unauthorized users or logs.
+
+    - path: "backend/app/api/v1/endpoints/chat.py"
+      instructions: |
+        ## Chat API
+        - Validate conversation inputs and enforce conversation ownership.
+        - Avoid leaking system prompts, secrets, or another user's messages.
+        - Check rate limiting, timeout handling, and safe error responses.
+        - Ensure tool execution follows the application's authorization
+          and approval requirements.
+
+    - path: "backend/app/api/v1/endpoints/accommodation_requests.py"
+      instructions: |
+        ## Accommodation API
+        - Enforce candidate and employer permissions for each request.
+        - Validate allowed state transitions.
+        - Ensure submission and status changes are accurately represented.
+        - Do not fabricate approval, availability, or fulfilment status.
+
+    - path: "backend/app/api/v1/endpoints/interviews.py"
+      instructions: |
+        ## Interview API
+        - Validate scheduling inputs, participant permissions, and time zones.
+        - Distinguish a proposed interview from a confirmed booking.
+        - Check accommodation preferences and accessible alternatives.
+        - Clearly identify mock video or scheduling integrations.
+
+    - path: "backend/app/workers/**"
+      instructions: |
+        ## Background Workers
+        - Check retries, idempotency, failure handling, and task timeouts.
+        - Flag duplicate processing that can create duplicate applications,
+          messages, or accommodation requests.
+        - Do not log sensitive payloads or silently discard failed tasks.
+
+    - path: "docs/**"
+      instructions: |
+        ## Documentation
+        - Flag claims of completed features without supporting implementation
+          or test evidence.
+        - Clearly distinguish implemented, planned, and simulated features.
+        - Flag unsupported accessibility, security, fairness, or performance
+          claims.
+        - Keep documented API contracts consistent with implementation.
+
+    - path: ".github/workflows/**"
+      instructions: |
+        ## GitHub Actions and CI
+        - Check that tests and configured quality checks run correctly.
+        - Flag leaked secrets, overly broad permissions, and unsafe
+          handling of untrusted pull-request code.
+        - Pin third-party actions to immutable commit SHAs when practical
+          under the project's dependency policy.
+        - Ensure CI failures are not accidentally ignored.
+
+    - path: "README.md"
+      instructions: |
+        ## Project README
+        - Keep setup instructions, environment variables, API usage,
+          architecture, and testing commands consistent with the code.
+        - Distinguish implemented functionality from future plans.
+        - Never include real credentials or private candidate data.
