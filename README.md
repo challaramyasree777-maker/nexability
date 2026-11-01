@@ -15,6 +15,7 @@ Inclusive hiring platform that helps candidates discover relevant jobs, understa
 
 See [`backend/README.md`](backend/README.md) for local setup instructions. Do not commit `.env`, API keys, database passwords, uploaded resumes, or real candidate information.
 
-## Testing a layer3 agent
 
-## Frontend
+
+
+Testing CodeRabbit PR review.
