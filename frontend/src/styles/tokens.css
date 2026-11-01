@@ -1,0 +1,97 @@
+/*
+  NexAbility design tokens.
+  Brand HEX values sampled from the official flowing-ribbon logo:
+  navy #082048, cyan #00B0F0, mid-blue #0088F0.
+  #0068B0 is the WCAG 2.2 AA text-safe secondary on white (~5.8:1).
+*/
+
+:root {
+  --color-primary: #082048;
+  --color-primary-hover: #083068;
+  --color-secondary: #0068b0;
+  --color-accent: #00b0f0;
+  --color-accent-strong: #0088f0;
+  --color-accent-soft: #e7f6fd;
+
+  --color-background: #f4f8fc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #e7f3fb;
+  --color-surface-inverse: #082048;
+
+  --color-text: #082048;
+  --color-text-muted: #2f4563;
+  --color-text-inverse: #ffffff;
+  --color-text-on-accent: #082048;
+  --color-on-primary: #ffffff;
+
+  --color-border: #c5d7e8;
+  --color-border-strong: #7aa3c4;
+
+  --color-focus: #082048;
+  --color-focus-inverse: #00b0f0;
+
+  --color-success: #0b7a4b;
+  --color-warning: #9a5b00;
+  --color-error: #b42318;
+
+  --font-family: Inter, "Segoe UI", Arial, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-h3: 1.5rem;
+  --font-size-h2: clamp(1.75rem, 3vw, 2.25rem);
+  --font-size-h1: clamp(2.25rem, 5vw, 3.75rem);
+  --font-size-display: clamp(2.5rem, 6vw, 4.25rem);
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-tight: 1.15;
+  --line-height-snug: 1.3;
+  --line-height-body: 1.6;
+  --letter-spacing-tight: -0.03em;
+  --letter-spacing-wide: 0.12em;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-page: clamp(1.25rem, 4vw, 2.5rem);
+  --layout-max: 70rem;
+  --layout-narrow: 38rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 0.25rem 0.75rem rgb(8 32 72 / 8%);
+  --shadow-md: 0 0.75rem 2rem rgb(8 32 72 / 12%);
+  --shadow-lg: 0 1.5rem 3.75rem rgb(8 32 72 / 18%);
+
+  --control-min-size: 3rem;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --motion-fast: 150ms ease;
+  --motion-base: 220ms ease;
+
+  color: var(--color-text);
+  background: var(--color-background);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+}
